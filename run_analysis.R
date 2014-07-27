@@ -1,40 +1,32 @@
 WS = getwd()
 
 ##get the header of the data
-Headerpath = paste(WS, "/Dataset/features.txt",sep="")
-HeaderData = read.table(Headerpath)
+HeaderData = read.table("Dataset/features.txt")
 Header_origin <-as.character(HeaderData[,2])
 
-##process the header to replace all the symbols like "(", ")", "_", "," with "_"
-## although the instrctor specify that the "_" should not be used in the varaible names
-## I think "_" makes the variable name more readable if it is composed of multiple element like the dataset we have
+##process the header to replace all the symbols like "(", ")", "_", "," with "."
 
 Header_low <- tolower(Header_origin)
-Header_proc1 <- gsub("\\(|\\)|,|-", "_", Header_low)
-Header_proc2 <- gsub("(_)+","_", Header_proc1)
-Header_final <- sub("_$", "", Header_proc2)
+Header_proc1 <- gsub("\\(|\\)|,|-", "\\.", Header_low)
+Header_proc2 <- gsub("(\\.)+","\\.", Header_proc1)
+Header_final <- sub("\\.$", "", Header_proc2)
 
 ##get the training data
-sub_path_tr <- paste (WS ,"/Dataset/train/subject_train.txt", sep="")
-subData_tr <- read.table(sub_path_tr,col.names = "subject")
+subData_tr <- read.table("Dataset/train/subject_train.txt",col.names = "subject")
 
-act_path_tr <- paste (WS ,"/Dataset/train/y_train.txt", sep="")
-actData_tr <- read.table(act_path_tr,col.names = "activity_code")
+actData_tr <- read.table("Dataset/train/y_train.txt",col.names = "activity.code")
 
-train_path <- paste (WS ,"/Dataset/train/X_train.txt", sep="")
-trainData <- read.table(train_path,col.names = Header_final)
+trainData <- read.table("Dataset/train/X_train.txt",col.names = Header_final)
 
 train_main <- cbind(subData_tr,actData_tr,trainData)
 
 ##get the test data
-sub_path_ts <- paste (WS ,"/Dataset/test/subject_test.txt", sep="")
-subData_ts <- read.table(sub_path_ts,col.names = "subject")
 
-act_path_ts <- paste (WS ,"/Dataset/test/y_test.txt", sep="")
-actData_ts <- read.table(act_path_ts,col.names = "activity_code")
+subData_ts <- read.table("Dataset/test/subject_test.txt",col.names = "subject")
 
-test_path <- paste (WS ,"/Dataset/test/X_test.txt", sep="")
-testData <- read.table(test_path, col.names = Header_final)
+actData_ts <- read.table("Dataset/test/y_test.txt",col.names = "activity.code")
+
+testData <- read.table("Dataset/test/X_test.txt", col.names = Header_final)
 
 test_main <- cbind(subData_ts,actData_ts,testData)
 
@@ -42,11 +34,11 @@ test_main <- cbind(subData_ts,actData_ts,testData)
 m <- rbind(train_main, test_main)
 
 ##label the activity
-label_path <- paste(WS, "/Dataset/activity_labels.txt",sep="")
-label_data <- read.table(label_path)
+
+label_data <- read.table("Dataset/activity_labels.txt")
 act_label = as.character(label_data[,2])
 
-m$activity_txt <- cut(m$activity_code, breaks = 6, labels = act_label)
+m[,"activity.txt"] <- cut(m[,"activity.code"], breaks = 6, labels = act_label)
 
 ##export the merged database
 write.csv(m, file = "master.csv",row.names=FALSE)
@@ -54,7 +46,7 @@ write.csv(m, file = "master.csv",row.names=FALSE)
 
 ##select the mean() and std() related var
 
-Header_merge <- c("subject","activity_code",  Header_low,"activity_txt")
+Header_merge <- c("subject","activity.code",  Header_low,"activity.txt")
 
 l1 <- grep("std\\(\\)|mean\\(\\)",Header_merge)
 l <- c(1,2,l1,564)
@@ -67,11 +59,11 @@ write.csv(refine_data, file = "subset_mean_std.csv",row.names=FALSE)
 ##calculate the mean of all var for all the activity of each subject
 library(reshape2)
 
-res <- melt(refine_data, id = c("subject", "activity_code", "activity_txt"))
-mean_table <- dcast(res, subject + activity_txt ~ variable, mean)
+res <- melt(refine_data, id = c("subject", "activity.code", "activity.txt"))
+mean_table <- dcast(res, subject + activity.txt ~ variable, mean)
 
 mean_table_origin_var <- names(mean_table)
-names(mean_table)[3:68] <- paste0(names(mean_table)[3:68], "_mean")
+names(mean_table)[3:68] <- paste0(names(mean_table)[3:68], ".mean")
 
 write.csv(mean_table, file = "subject_act_mean_value.csv",row.names=FALSE)
 

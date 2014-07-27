@@ -10,11 +10,15 @@ Three tidy datasets were created using the run_analysis.R script
 * __subject_act_mean_value.csv__ calculated the mean of all the variables in the subset_mean_std.csv for six activities of all 30 subjects
 
 ### Codebook
-* Please refer to codebook1.txt for datasets master.csv and subset_mean_std.csv
-* Please refer to codebook2.txt for subject_act_mean_value.csv
+* Please refer to codebook.md
 
 ### Script
 The analysis was done in the run_analysis.R
-Please refer to the comment in the code for detail.
-To run this code, please setup the R working directory to where you store the script.
-Please don't keep the dataset folder in the same work space.
+To run this code, please setup the R working directory to where you store the script and keep the original dataset folder in the same work space.
+* Step 1, get the variable name from feature.txt and clean the name to fit the R programming variable name convention
+* Step 2, read the test and training data and merge the two dataset
+* Step 3, label the activity code according to activity_labels.txt
+* Step 4, subset the data with only variables contain "std()" and "mean()"
+* Step 5, calculate the means of all the variables for all six activities of each subject
+
+Please refer to the comment in the code for more detail.
